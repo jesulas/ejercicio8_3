@@ -1,9 +1,4 @@
-import { Carta, Tablero, baraja, tablero } from "./modelo"
-import { intentosActualizados, parejaNoEncontrada, revelarCarta } from "./ui";
-
-let contador = 0;
-let parejasEncontradas = 0;
-
+import { Carta, Tablero } from "./modelo"
 
 export const barajarCartas = (cartas : Carta[]): Carta[] => {
     let currentIndex = cartas.length,  randomIndex; //randomIndex se inicializa, no tiene valor aqui
@@ -23,7 +18,7 @@ export const barajarCartas = (cartas : Carta[]): Carta[] => {
     return cartas;
 }
 
-  const sePuedeVoltearLaCarta = (tablero: Tablero, indice: number ): boolean => {
+  export const sePuedeVoltearLaCarta = (tablero: Tablero, indice: number ): boolean => {
     
     if (tablero.cartas[indice].estaVuelta === false || tablero.cartas[indice].encontrada === false){
       return true
@@ -32,38 +27,23 @@ export const barajarCartas = (cartas : Carta[]): Carta[] => {
     return false
   }
 
-  //mover a UI
 
-
-    //recortar
   export const voltearLaCarta = (tablero: Tablero, indice: number) : void => {
-    if (sePuedeVoltearLaCarta(tablero, indice)){
-        if (tablero.estadoPartida != "PartidaNoIniciada" && tablero.estadoPartida != "PartidaCompleta"){
-            let sacada = tablero.cartas[indice].imagen
-            let elemento = document.getElementById("slot" + (indice)) as HTMLImageElement
-            revelarCarta(elemento, sacada)
-            contador++
-            if (contador === 1){
-                tablero.indiceCartaVolteadaA = indice;
-                tablero.estadoPartida = "UnaCartaLevantada"
-            }
-            if (contador === 2){
-                intentosActualizados();
-                tablero.estadoPartida = "DosCartasLevantadas"
-                //resetear el contador
-                contador = 0;
-                if(sonPareja(indice,tablero.indiceCartaVolteadaA!,tablero) === true){
-                    parejaEncontrada(tablero,indice,tablero.indiceCartaVolteadaA!);
-                } 
-                else {
-                parejaNoEncontrada(indice,tablero.indiceCartaVolteadaA!);
-                };
-            }
-        }
-  } }
-  /*
-  Dos cartas son pareja si en el array de tablero de cada una tienen el mismo id
-*/
+    tablero.cartas[indice].estaVuelta = true;
+
+    if(tablero.estadoPartida === "CeroCartasLevantadas"){
+      tablero.indiceCartaVolteadaA = indice,
+      tablero.estadoPartida = "UnaCartaLevantada"
+    } else if (tablero.estadoPartida === "UnaCartaLevantada"){
+      tablero.indiceCartaVolteadaB = indice;
+      tablero.estadoPartida = "DosCartasLevantadas"
+    }
+  }
+
+
+// Dos cartas son pareja si en el array de tablero de cada una tienen el mismo id
+
+
 export const sonPareja = (indiceA: number, indiceB: number, tablero: Tablero): boolean => {
 
     if (tablero.cartas[indiceA].idFoto === tablero.cartas[indiceB].idFoto && tablero.estadoPartida === "DosCartasLevantadas"){
@@ -73,43 +53,40 @@ export const sonPareja = (indiceA: number, indiceB: number, tablero: Tablero): b
   }
 
 /*
-Aquí asumimos ya que son pareja, lo que hacemos es marcarlas como encontradas y comprobar si la partida esta completa.
+Aquí asumimos ya que son pareja, lo que hacemos es marcarlas como encontradas y 
+comprobar si la partida esta completa.
 */
-const parejaEncontrada = (tablero: Tablero, indiceA: number, indiceB: number) : void => {
+
+export const parejaEncontrada = (tablero: Tablero, indiceA: number, indiceB: number) : void => {
     tablero.cartas[indiceA].encontrada = true;
     tablero.cartas[indiceB].encontrada = true;
     tablero.cartas[indiceA].estaVuelta = true;
     tablero.cartas[indiceB].estaVuelta = true;
-    parejasEncontradas++
+    tablero.estadoPartida = "CeroCartasLevantadas";
+    tablero.indiceCartaVolteadaA = undefined;
+    tablero.indiceCartaVolteadaB = undefined;
     esPartidaCompleta(tablero)
 }
   
+export const parejaNoEncontrada = (tablero: Tablero, indiceA: number, indiceB: number) : void => {
+  tablero.cartas[indiceA].encontrada = false;
+  tablero.cartas[indiceB].encontrada = false;
+  tablero.cartas[indiceA].estaVuelta = false;
+  tablero.cartas[indiceB].estaVuelta = false;
+  tablero.estadoPartida = "CeroCartasLevantadas";
+  tablero.indiceCartaVolteadaA = undefined;
+  tablero.indiceCartaVolteadaB = undefined;
+}
 
 /*
   Esto lo podemos comprobar o bien utilizando every, o bien utilizando un contador (cartasEncontradas)
 */
 
 export const esPartidaCompleta = (tablero: Tablero) : boolean => {
-    
-    if (parejasEncontradas === 6){
-        tablero.estadoPartida= "PartidaCompleta"
-        alert("Partida Completada")
-        return true
-    } else {
-    return false;
-    }
+    return tablero.cartas.every((carta ) => carta.encontrada && carta.estaVuelta);
   }
 
 /*
 Iniciar partida
 */
 
-const startGame = document.getElementById("startGame");
-if ((startGame != null && startGame != undefined && startGame)){
-    startGame.addEventListener("click", () => iniciaPartida(tablero))
-}
-
-export const iniciaPartida = (tablero: Tablero): void => {
-    tablero.estadoPartida = "CeroCartasLevantadas";
-    tablero.cartas = barajarCartas(baraja);
-  };
