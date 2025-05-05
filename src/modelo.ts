@@ -15,11 +15,11 @@ export interface Carta {
 const infoCartas: InfoCarta[] = [
 {
     idFoto: 1,
-    imagen: "https://github.com/Lemoncode/fotos-ejemplos/blob/main/memo/1.png?raw=true"
+    imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/1.png"
 },
 {
     idFoto: 2,
-    imagen: "https://github.com/Lemoncode/fotos-ejemplos/blob/main/memo/2.png?raw=true"
+    imagen: "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/refs/heads/main/memo/2.png"
 },
 {
     idFoto: 3,

@@ -3,7 +3,7 @@ import { barajarCartas, voltearLaCarta, sePuedeVoltearLaCarta, sonPareja, pareja
 
 let intentos = 0;
 const startGame = document.getElementById("startGame");
-if ((startGame != null && startGame != undefined)){
+if ((startGame !== null && startGame !== undefined )){
 startGame.addEventListener("click",  () => gameStart(tablero))
 }
 
@@ -15,7 +15,7 @@ tablero.cartas = barajarCartas(baraja);
 
 
 export function revelarCarta(indice:number, imagenString: string){
-const elemento = document.getElementById("slot" + (indice));
+const elemento = document.querySelector(`img[data-indice-id="${indice}"]`);
 
 if (elemento != null && elemento instanceof HTMLImageElement){
 elemento.src= imagenString
@@ -44,7 +44,7 @@ const mirarSiEsLaSegundaCarta = (tablero:Tablero) => {
   const indiceCartaA = tablero.indiceCartaVolteadaA
   const indiceCartaB = tablero.indiceCartaVolteadaB
 
-if (indiceCartaA !== undefined && indiceCartaB !== undefined){
+if (indiceCartaA != undefined && indiceCartaB != undefined){
   intentos++
 if (sonPareja(indiceCartaA, indiceCartaB, tablero)){
 
@@ -60,15 +60,15 @@ parejaEncontrada(tablero,indiceCartaA,indiceCartaB)
 }
 
 for (let i=0; i<12 ; i++){
-    const botonSlot1 = document.getElementById("slot"+i);
+    const botonSlot1 = document.querySelector(`img[data-indice-id="${i}"]`)
     if ((botonSlot1 != null && botonSlot1 != undefined && botonSlot1 instanceof HTMLImageElement)){
         botonSlot1.addEventListener("click", () => funcionClickCarta(tablero, i))
     } 
 }
 
 const mostrarCartasBocaAbajo = ( indiceA :number, indiceB : number) : void => {
-    let elemento = document.getElementById("slot" + indiceA);
-    let elemento2 = document.getElementById("slot" + indiceB);
+    let elemento = document.querySelector(`img[data-indice-id="${indiceA}"]`)
+    let elemento2 = document.querySelector(`img[data-indice-id="${indiceB}"]`)
     if (elemento != null && elemento != undefined && elemento instanceof HTMLImageElement){
         if(elemento2 != null && elemento2 != undefined && elemento2 instanceof HTMLImageElement)
     resetearCarta(elemento, elemento2)}
